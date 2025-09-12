@@ -1,0 +1,30 @@
+{
+  "name": "topperspg",
+  "version": "1.0.0",
+  "description": "Toppers PG Admin DashBoard",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mehul-Agarwaal/ToppersPG.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Mehul-Agarwaal/ToppersPG/issues"
+  },
+  "homepage": "https://github.com/Mehul-Agarwaal/ToppersPG#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "method-override": "^3.0.0",
+    "mongoose": "^8.18.1",
+    "multer": "^2.0.2",
+    "nodemon": "^3.1.10",
+    "passport": "^0.7.0",
+    "path": "^0.12.7"
+  }
+}
