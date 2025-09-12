@@ -1,6 +1,6 @@
-const PG = require('../Models/PG');
-const Room = require('../Models/Room');
-const Resident = require('../Models/Resident');
+const PG = require('../models/PG');
+const Room = require('../models/Room');
+const Resident = require('../models/Resident');
 
 exports.getDashboard = async (req, res) => {
     try {

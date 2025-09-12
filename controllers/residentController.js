@@ -1,6 +1,6 @@
-const Resident = require('../Models/Resident');
-const Room = require('../Models/Room');
-const PG = require('../Models/PG');
+const Resident = require('../models/Resident');
+const Room = require('../models/Room');
+const PG = require('../models/PG');
 const { cloudinary } = require('../config/cloudinaryConfig');
 
 exports.getAllResidents = async (req, res) => {

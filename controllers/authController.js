@@ -1,5 +1,5 @@
 const passport = require('passport');
-const Admin = require('../Models/Admin');
+const Admin = require('../models/Admin');
 
 exports.getLoginPage = (req, res) => {
     // The 'error' flash message is automatically populated by Passport's failureFlash
