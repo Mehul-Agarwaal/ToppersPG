@@ -1,0 +1,85 @@
+<%- include('partials/header') %>
+
+<main class="container mx-auto p-4 md:p-6 lg:p-8">
+    
+    <%- include('partials/messages') %>
+
+    <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+        <div class="bg-white p-4 rounded-lg shadow-md text-center">
+            <h3 class="text-gray-500 text-sm font-medium">Total PGs</h3>
+            <p class="text-3xl font-bold text-slate-800"><%= stats.totalPGs || 0 %></p>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow-md text-center">
+            <h3 class="text-gray-500 text-sm font-medium">Total Rooms</h3>
+            <p class="text-3xl font-bold text-slate-800"><%= stats.totalRooms || 0 %></p>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow-md text-center">
+            <h3 class="text-gray-500 text-sm font-medium">Total Residents</h3>
+            <p class="text-3xl font-bold text-slate-800"><%= stats.totalResidents || 0 %></p>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow-md text-center">
+            <h3 class="text-gray-500 text-sm font-medium">Payments Due</h3>
+            <p class="text-3xl font-bold text-amber-600"><%= stats.paymentsDue || 0 %></p>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow-md text-center col-span-2 md:col-span-1 lg:col-span-1">
+            <h3 class="text-gray-500 text-sm font-medium">Vacant Spots</h3>
+            <p class="text-3xl font-bold text-green-600"><%= stats.vacantSpots || 0 %></p>
+        </div>
+    </section>
+
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-bold mb-4 text-slate-700">Add New PG</h2>
+            <form action="/pgs" method="POST" class="space-y-4">
+                <div>
+                    <label for="pg-name" class="block text-sm font-medium text-gray-700">PG Name</label>
+                    <input type="text" name="name" id="pg-name" value="<%= formData.name || '' %>" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="pg-location" class="block text-sm font-medium text-gray-700">Location / Area</label>
+                    <input type="text" name="location" id="pg-location" value="<%= formData.location || '' %>" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="pg-address" class="block text-sm font-medium text-gray-700">Full Address</label>
+                    <textarea name="address" id="pg-address" rows="2" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"><%= formData.address || '' %></textarea>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Add PG</button>
+            </form>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-bold mb-4 text-slate-700">Add New Room</h2>
+            <form action="/rooms" method="POST" class="space-y-4">
+                <div>
+                    <label for="room-pg" class="block text-sm font-medium text-gray-700">Select PG</label>
+                    <select name="pg" id="room-pg" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <% pgs.forEach(pg => { %>
+                            <option value="<%= pg._id %>" <%= (formData.pg == pg._id) ? 'selected' : '' %>><%= pg.name %> - <%= pg.location %></option>
+                        <% }) %>
+                    </select>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="room-number" class="block text-sm font-medium text-gray-700">Room Number</label>
+                        <input type="text" name="roomNumber" id="room-number" value="<%= formData.roomNumber || '' %>" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="room-rent" class="block text-sm font-medium text-gray-700">Monthly Rent</label>
+                        <input type="number" name="rent" id="room-rent" value="<%= formData.rent || '' %>" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                </div>
+                <div>
+                    <label for="room-occupancy" class="block text-sm font-medium text-gray-700">Occupancy Type</label>
+                    <select name="occupancyType" id="room-occupancy" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="single" <%= (formData.occupancyType == 'single') ? 'selected' : '' %>>Single</option>
+                        <option value="double" <%= (formData.occupancyType == 'double') ? 'selected' : '' %>>Double</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">Add Room</button>
+            </form>
+        </div>
+    </section>
+</main>
+
+
+<%- include('partials/footer') %>
