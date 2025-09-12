@@ -1,4 +1,4 @@
-const PG = require('../models/PG');
+const PG = require('../Models/PG');
 
 exports.createPg = async (req, res) => {
     try {

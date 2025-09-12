@@ -1,6 +1,6 @@
-const Resident = require('../models/Resident');
-const Room = require('../models/Room');
-const PG = require('../models/PG');
+const Resident = require('../Models/Resident');
+const Room = require('../Models/Room');
+const PG = require('../Models/PG');
 const { cloudinary } = require('../config/cloudinaryConfig');
 
 exports.getAllResidents = async (req, res) => {
@@ -64,7 +64,7 @@ exports.deleteResident = async (req, res) => {
         
         req.flash('success_msg', 'Resident deleted successfully.');
         res.redirect('/residents');
-    } catch (error)
+    } catch (error){
         console.error(error);
         req.flash('error', 'Error deleting resident.');
         res.redirect('/residents');
