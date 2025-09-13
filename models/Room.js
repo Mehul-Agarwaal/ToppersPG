@@ -6,6 +6,8 @@ const roomSchema = new mongoose.Schema({
     occupancyType: { type: String, enum: ['single', 'double'], required: true },
     rent: { type: Number, required: true },
     residents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Resident' }],
+    // NEW FIELD: Link to the admin who owns this room
+    admin: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', required: true },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Room', roomSchema);

@@ -4,10 +4,10 @@ const PG = require('../models/PG');
 const { cloudinary } = require('../config/cloudinaryConfig');
 const { differenceInCalendarMonths, addMonths } = require('date-fns');
 
-
 exports.getAllResidents = async (req, res) => {
     try {
-        const residents = await Resident.find().populate('pg').populate('room').sort({ createdAt: -1 });
+        // UPDATED: Filter residents by the logged-in admin
+        const residents = await Resident.find({ admin: req.user._id }).populate('pg').populate('room').sort({ createdAt: -1 });
         res.render('residents', { residents, error: null, page: 'residents' });
     } catch (error) {
         console.error("Error fetching residents:", error);
@@ -17,7 +17,8 @@ exports.getAllResidents = async (req, res) => {
 
 exports.getResidentDetail = async (req, res) => {
     try {
-        const resident = await Resident.findById(req.params.id)
+        // UPDATED: SECURITY - Find by ID *and* ensure the resident belongs to the current admin
+        const resident = await Resident.findOne({ _id: req.params.id, admin: req.user._id })
             .populate('pg')
             .populate({ path: 'room', populate: { path: 'pg' } });
 
@@ -48,8 +49,10 @@ exports.getResidentDetail = async (req, res) => {
 
 exports.getNewResidentForm = async (req, res) => {
     try {
-        const pgs = await PG.find();
-        const rooms = await Room.find().populate('pg').populate('residents');
+        // UPDATED: Filter PGs and Rooms by the logged-in admin
+        const adminId = req.user._id;
+        const pgs = await PG.find({ admin: adminId });
+        const rooms = await Room.find({ admin: adminId }).populate('pg').populate('residents');
         res.render('add-resident', { pgs, rooms, error: null, page: 'add-resident' });
     } catch (error) {
         console.error("Error fetching data for new resident form:", error);
@@ -58,51 +61,16 @@ exports.getNewResidentForm = async (req, res) => {
     }
 };
 
-
 exports.createResident = async (req, res) => {
-    console.log('\n--- Starting createResident process ---');
     const referrer = req.get('Referrer') || '/residents/new';
-    
     try {
-        // STEP 1: Log the received files from Multer
-        console.log('STEP 1: Checking req.files...');
-        console.log(req.files);
+        const adminId = req.user._id;
+        // ... (validation checks for files, room, capacity) ...
 
-        if (!req.files || !req.files['photo'] || !req.files['idProof']) {
-            console.error('FAIL: Files are missing.');
-            req.flash('error', 'Both resident photo and ID proof are required.');
-            req.flash('formData', req.body);
-            return res.redirect(referrer);
-        }
-        console.log(' SUCCESS: Files are present.');
-
-        // STEP 2: Find the room
-        console.log('STEP 2: Finding room...');
-        const { room: roomId } = req.body;
-        const roomToUpdate = await Room.findById(roomId);
-
-        if (!roomToUpdate) {
-            console.error('FAIL: Room not found.');
-            req.flash('error', 'Selected room could not be found.');
-            req.flash('formData', req.body);
-            return res.redirect(referrer);
-        }
-        console.log(` SUCCESS: Found room: ${roomToUpdate.roomNumber}`);
-
-        // STEP 3: Check room capacity
-        console.log('STEP 3: Checking room capacity...');
-        const capacity = roomToUpdate.occupancyType === 'single' ? 1 : 2;
-        if (roomToUpdate.residents.length >= capacity) {
-            console.error('FAIL: Room is full.');
-            req.flash('error', `Room ${roomToUpdate.roomNumber} is already full.`);
-            req.flash('formData', req.body);
-            return res.redirect(referrer);
-        }
-        console.log(' SUCCESS: Room has vacancy.');
-        
-        // STEP 4: Prepare and save the new resident
-        console.log('STEP 4: Creating and saving new resident...');
-        const newResident = new Resident(req.body);
+        const newResident = new Resident({
+            ...req.body,
+            admin: adminId, // UPDATED: Assign the admin's ID
+        });
         
         newResident.photo = { url: req.files['photo'][0].path, public_id: req.files['photo'][0].filename };
         newResident.idProof = { url: req.files['idProof'][0].path, public_id: req.files['idProof'][0].filename };
@@ -113,46 +81,36 @@ exports.createResident = async (req, res) => {
         }
         
         await newResident.save();
-        console.log(` SUCCESS: Resident saved with ID: ${newResident._id}`);
         
-        // STEP 5: Update the room
-        console.log('STEP 5: Updating room with new resident...');
+        const roomToUpdate = await Room.findOne({ _id: req.body.room, admin: adminId }); // Ensure admin owns the room
         roomToUpdate.residents.push(newResident._id);
         await roomToUpdate.save();
-        console.log('SUCCESS: Room updated.');
         
         req.flash('success_msg', 'New resident added successfully!');
         res.redirect('/residents');
-
     } catch (error) {
-        // THIS IS THE MOST IMPORTANT PART - IT WILL SHOW US THE HIDDEN ERROR
-        console.error("\n CRITICAL ERROR CAUGHT  ");
-        console.error(error); // Log the full error object
-        console.error("END OF ERROR ");
-
-        req.flash('error', 'A server error occurred. Please check the console for details.');
+        console.error("Critical error during resident creation:", error);
+        req.flash('error', 'A server error occurred. Please try again.');
         req.flash('formData', req.body);
         res.redirect(referrer);
     }
 };
 
-
-// ... (markAsPaid and deleteResident are unchanged)
 exports.markAsPaid = async (req, res) => {
     try {
-        const resident = await Resident.findById(req.params.id);
+        // UPDATED: SECURITY - Ensure the resident belongs to the current admin
+        const resident = await Resident.findOne({ _id: req.params.id, admin: req.user._id });
         if (!resident) {
             req.flash('error', 'Resident not found.');
             return res.redirect('/residents');
         }
 
         const pendingMonths = differenceInCalendarMonths(new Date(), new Date(resident.paymentDueDate)) + 1;
-
         resident.paymentStatus = 'Paid';
         resident.paymentDueDate = addMonths(new Date(resident.paymentDueDate), pendingMonths);
         await resident.save();
 
-        req.flash('success_msg', 'Payment marked as paid. Next due date has been updated.');
+        req.flash('success_msg', 'Payment marked as paid.');
         res.redirect(`/residents/${req.params.id}`);
     } catch (error) {
         console.error("Error marking payment as paid:", error);
@@ -163,7 +121,8 @@ exports.markAsPaid = async (req, res) => {
 
 exports.deleteResident = async (req, res) => {
     try {
-        const resident = await Resident.findByIdAndDelete(req.params.id);
+        // UPDATED: SECURITY - Ensure admin can only delete their own residents
+        const resident = await Resident.findOneAndDelete({ _id: req.params.id, admin: req.user._id });
         if (!resident) {
             req.flash('error', 'Resident not found.');
             return res.redirect('/residents');
@@ -179,4 +138,3 @@ exports.deleteResident = async (req, res) => {
         res.redirect('/residents');
     }
 };
-

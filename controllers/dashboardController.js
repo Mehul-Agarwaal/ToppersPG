@@ -4,9 +4,12 @@ const Resident = require('../models/Resident');
 
 exports.getDashboard = async (req, res) => {
     try {
-        const pgs = await PG.find();
-        const rooms = await Room.find().populate('pg').populate('residents');
-        const residents = await Resident.find().populate('pg').populate('room');
+        const adminId = req.user._id; // Get the logged-in admin's ID
+
+        // UPDATED: Filter all queries by the admin's ID
+        const pgs = await PG.find({ admin: adminId });
+        const rooms = await Room.find({ admin: adminId }).populate('pg').populate('residents');
+        const residents = await Resident.find({ admin: adminId }).populate('pg').populate('room');
 
         const stats = {
             totalPGs: pgs.length,
