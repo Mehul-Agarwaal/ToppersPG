@@ -37,7 +37,13 @@
                     </div>
                      <div>
                         <label for="workplaceOrCollege" class="block text-sm font-medium text-gray-700">Workplace / College</label>
-                        <input type="text" name="workplaceOrCollege" id="workplaceOrCollege" value="<%= formData.workplaceOrCollege || '' %>" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <input type="text" name="workplaceOrCollege" id="workplaceOrCollege" list="workplaces" value="<%= formData.workplaceOrCollege || '' %>" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <datalist id="workplaces">
+                            <option value="Manipal University">
+                            <option value="Jaipur National University">
+                            <option value="Fortis Hospital">
+                            <option value="Jawahar Circle IT Park">
+                        </datalist>
                     </div>
                 </div>
             </div>
@@ -46,58 +52,4 @@
                  <h2 class="text-lg font-semibold text-gray-700 mb-4">Documents</h2>
                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="photo" class="block text-sm font-medium text-gray-700">Resident's Photo</label>
-                        <input type="file" name="photo" id="photo" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
-                    </div>
-                     <div>
-                        <label for="idProof" class="block text-sm font-medium text-gray-700">Identity Proof</label>
-                        <input type="file" name="idProof" id="idProof" accept="image/*,.pdf" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
-                    </div>
-                 </div>
-            </div>
-
-            <div>
-                 <h2 class="text-lg font-semibold text-gray-700 mb-4">PG and Room Details</h2>
-                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                     <div>
-                        <label for="pg" class="block text-sm font-medium text-gray-700">Select PG</label>
-                        <select name="pg" id="pg" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                           <% pgs.forEach(pg => { %>
-                                <option value="<%= pg._id %>" <%= (formData.pg == pg._id) ? 'selected' : '' %>><%= pg.name %></option>
-                           <% }) %>
-                        </select>
-                    </div>
-                     <div>
-                        <label for="room" class="block text-sm font-medium text-gray-700">Select Room</label>
-                        <select name="room" id="room" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                            <% rooms.forEach(room => { 
-                                const capacity = room.occupancyType === 'single' ? 1 : 2;
-                                if (room.residents.length < capacity) { %>
-                                    <option value="<%= room._id %>" <%= (formData.room == room._id) ? 'selected' : '' %>>
-                                        Room <%= room.roomNumber %> (<%= room.pg.name %>) - <%= room.occupancyType %>
-                                    </option>
-                            <% }}) %>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="paymentStatus" class="block text-sm font-medium text-gray-700">Initial Payment Status</label>
-                        <select name="paymentStatus" id="paymentStatus" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                            <option value="Paid" <%= (formData.paymentStatus == 'Paid') ? 'selected' : '' %>>Paid</option>
-                            <option value="Due" <%= (formData.paymentStatus == 'Due' || !formData.paymentStatus) ? 'selected' : '' %>>Due</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="joiningDate" class="block text-sm font-medium text-gray-700">Joining Date</label>
-                        <input type="date" name="joiningDate" id="joiningDate" value="<%= formData.joiningDate || new Date().toISOString().split('T')[0] %>" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                    </div>
-                 </div>
-            </div>
-
-            <div class="flex justify-end">
-                <button type="submit" class="bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Save Resident</button>
-            </div>
-        </form>
-    </div>
-</main>
-
-<%- include('partials/footer') %>
+                        <label for="photo" class="block text-sm font-medium text-gray-700">

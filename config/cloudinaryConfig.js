@@ -14,7 +14,7 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'pg-dashboard', // The folder name on Cloudinary
-    format: 'png', // The format to save the image as
+    
     // Generate a unique public ID for each file
     public_id: (req, file) => `resident-${file.fieldname}-${Date.now()}`,
   },

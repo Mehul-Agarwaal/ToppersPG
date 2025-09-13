@@ -7,7 +7,7 @@ const residentSchema = Joi.object({
         'string.empty': 'Contact number is required.'
     }),
     email: Joi.string().trim().email({ tlds: { allow: false } }).allow('').optional(), // Allow empty email, but if provided, must be valid
-    permanentAddress: Joi.string().trim().min(10).required(),
+    permanentAddress: Joi.string().trim().min(5).required(),
     occupation: Joi.string().trim().required(),
     workplaceOrCollege: Joi.string().trim().required(),
     pg: Joi.string().hex().length(24).required(),
