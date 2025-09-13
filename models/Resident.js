@@ -13,6 +13,8 @@ const residentSchema = new mongoose.Schema({
     room: { type: mongoose.Schema.Types.ObjectId, ref: 'Room', required: true },
     paymentStatus: { type: String, enum: ['Paid', 'Due', 'Overdue'], default: 'Due' },
     joiningDate: { type: Date, default: Date.now },
+    // NEW FIELD to track the next payment date
+    paymentDueDate: { type: Date },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Resident', residentSchema);

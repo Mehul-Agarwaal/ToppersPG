@@ -52,4 +52,113 @@
                  <h2 class="text-lg font-semibold text-gray-700 mb-4">Documents</h2>
                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="photo" class="block text-sm font-medium text-gray-700">
+                        <label for="photo" class="block text-sm font-medium text-gray-700">Resident's Photo</label>
+                        <input type="file" name="photo" id="photo" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                    </div>
+                     <div>
+                        <label for="idProof" class="block text-sm font-medium text-gray-700">Identity Proof</label>
+                        <input type="file" name="idProof" id="idProof" accept="image/*,.pdf" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                    </div>
+                 </div>
+            </div>
+
+            <div>
+                 <h2 class="text-lg font-semibold text-gray-700 mb-4">PG and Room Details</h2>
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                     <div>
+                        <label for="pg" class="block text-sm font-medium text-gray-700">Select PG</label>
+                        <select name="pg" id="pg" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                           <option value="" disabled <%= !formData.pg ? 'selected' : '' %>>-- Select a PG --</option>
+                           <% pgs.forEach(pg => { %>
+                                <option value="<%= pg._id %>" <%= (formData.pg == pg._id) ? 'selected' : '' %>><%= pg.name %></option>
+                           <% }) %>
+                        </select>
+                    </div>
+                     <div>
+                        <label for="room" class="block text-sm font-medium text-gray-700">Select Room</label>
+                        <select name="room" id="room" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" disabled>
+                            <option value="" disabled selected>-- Select a PG first --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="paymentStatus" class="block text-sm font-medium text-gray-700">Initial Payment Status</label>
+                        <select name="paymentStatus" id="paymentStatus" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="Paid" <%= (formData.paymentStatus == 'Paid') ? 'selected' : '' %>>Paid</option>
+                            <option value="Due" <%= (formData.paymentStatus == 'Due' || !formData.paymentStatus) ? 'selected' : '' %>>Due</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="joiningDate" class="block text-sm font-medium text-gray-700">Joining Date</label>
+                        <input type="date" name="joiningDate" id="joiningDate" value="<%= formData.joiningDate || new Date().toISOString().split('T')[0] %>" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                 </div>
+            </div>
+
+            <div class="flex justify-end">
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Save Resident</button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<script>
+    // 1. Embed all room data from the server into a JavaScript variable
+    const allRooms = <%- JSON.stringify(rooms) %>;
+    const previouslySelectedRoom = "<%= formData.room || '' %>";
+
+    // 2. Get references to the two dropdowns
+    const pgSelect = document.getElementById('pg');
+    const roomSelect = document.getElementById('room');
+
+    // 3. Create a function to update the room dropdown
+    const updateRoomOptions = () => {
+        const selectedPgId = pgSelect.value;
+        let availableRooms = [];
+
+        // If a PG is selected, filter the rooms
+        if (selectedPgId) {
+            availableRooms = allRooms.filter(room => {
+                // Safely check the room's PG ID
+                const roomPgId = (typeof room.pg === 'object' && room.pg !== null) ? room.pg._id : room.pg;
+                const isCorrectPg = roomPgId === selectedPgId;
+                
+                // Check for vacant spots
+                const capacity = room.occupancyType === 'single' ? 1 : 2;
+                const hasVacancy = room.residents.length < capacity;
+
+                return isCorrectPg && hasVacancy;
+            });
+        }
+
+        // 4. Clear the current room options
+        roomSelect.innerHTML = '';
+
+        // 5. Populate the room dropdown with the filtered list
+        if (availableRooms.length > 0) {
+            roomSelect.disabled = false;
+            roomSelect.innerHTML = '<option value="" disabled selected>-- Select an available room --</option>';
+            availableRooms.forEach(room => {
+                const option = document.createElement('option');
+                option.value = room._id;
+                option.textContent = `Room ${room.roomNumber} (${room.occupancyType})`;
+                // If this room was selected before a validation error, re-select it
+                if (room._id === previouslySelectedRoom) {
+                    option.selected = true;
+                }
+                roomSelect.appendChild(option);
+            });
+        } else {
+            roomSelect.disabled = true;
+            const message = selectedPgId ? 'No vacant rooms in this PG' : 'Select a PG first';
+            roomSelect.innerHTML = `<option value="" disabled selected>-- ${message} --</option>`;
+        }
+    };
+
+    // 6. Add an event listener to the PG dropdown
+    pgSelect.addEventListener('change', updateRoomOptions);
+
+    // 7. Run the function once on page load to set the initial state
+    document.addEventListener('DOMContentLoaded', updateRoomOptions);
+</script>
+
+<%- include('partials/footer') %>
