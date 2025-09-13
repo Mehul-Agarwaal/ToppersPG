@@ -2,14 +2,14 @@ const PG = require('../models/PG');
 const Room = require('../models/Room');
 const Resident = require('../models/Resident');
 
+// This function now renders the original dashboard with stats
 exports.getDashboard = async (req, res) => {
     try {
-        const adminId = req.user._id; // Get the logged-in admin's ID
+        const adminId = req.user._id;
 
-        // UPDATED: Filter all queries by the admin's ID
         const pgs = await PG.find({ admin: adminId });
-        const rooms = await Room.find({ admin: adminId }).populate('pg').populate('residents');
-        const residents = await Resident.find({ admin: adminId }).populate('pg').populate('room');
+        const rooms = await Room.find({ admin: adminId }).populate('residents');
+        const residents = await Resident.find({ admin: adminId });
 
         const stats = {
             totalPGs: pgs.length,
@@ -21,9 +21,10 @@ exports.getDashboard = async (req, res) => {
                 return acc + (capacity - room.residents.length);
             }, 0),
         };
-        res.render('dashboard', { pgs, rooms, residents, stats, error: null, page: 'dashboard' });
+        // Note: we pass 'pgs' to populate the "Add Room" form dropdown
+        res.render('dashboard', { pgs, stats, page: 'dashboard' });
     } catch (error) {
         console.error("Error fetching dashboard data:", error);
-        res.render('dashboard', { pgs: [], rooms: [], residents: [], stats: {}, error: "Could not fetch dashboard data.", page: 'dashboard' });
+        res.render('dashboard', { pgs:[], stats: {}, error: "Could not fetch data.", page: 'dashboard' });
     }
 };
