@@ -138,3 +138,39 @@ exports.deleteResident = async (req, res) => {
         res.redirect('/residents');
     }
 };
+
+exports.getResidentEditForm = async (req, res) => {
+    try {
+        const resident = await Resident.findOne({ _id: req.params.id, admin: req.user._id })
+            .populate('pg')
+            .populate('room');
+            
+        if (!resident) {
+            req.flash('error', 'Resident not found.');
+            return res.redirect('/residents');
+        }
+        res.render('edit-resident', { resident, page: 'residents' });
+    } catch (error) {
+        console.error("Error fetching resident for edit:", error);
+        req.flash('error', 'Could not load the edit form.');
+        res.redirect('/residents');
+    }
+};
+
+exports.updateResident = async (req, res) => {
+    try {
+        const { name, contactNumber, email, permanentAddress, occupation, workplaceOrCollege } = req.body;
+        
+        await Resident.findOneAndUpdate(
+            { _id: req.params.id, admin: req.user._id },
+            { name, contactNumber, email, permanentAddress, occupation, workplaceOrCollege }
+        );
+            
+        req.flash('success_msg', 'Resident details updated successfully.');
+        res.redirect(`/residents/${req.params.id}`);
+    } catch (error) {
+        console.error("Error updating resident:", error);
+        req.flash('error', 'Failed to update resident details.');
+        res.redirect(`/residents/${req.params.id}`);
+    }
+};

@@ -1,0 +1,41 @@
+<%- include('partials/header') %>
+
+<main class="container mx-auto p-4 md:p-6 lg:p-8">
+    <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
+        <div class="flex items-center mb-6">
+             <a href="/pgs/<%= room.pg._id %>" class="text-indigo-600 hover:text-indigo-800 mr-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+            </a>
+            <h1 class="text-3xl font-bold text-slate-800">Edit Room Details</h1>
+        </div>
+        
+        <%- include('partials/messages') %>
+        
+        <form action="/rooms/<%= room._id %>?_method=PUT" method="POST" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Property</label>
+                <p class="mt-1 text-lg font-semibold text-gray-900"><%= room.pg.name %></p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="room-number" class="block text-sm font-medium text-gray-700">Room Number</label>
+                    <input type="text" name="roomNumber" id="room-number" value="<%= room.roomNumber %>" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="room-rent" class="block text-sm font-medium text-gray-700">Monthly Rent</label>
+                    <input type="number" name="rent" id="room-rent" value="<%= room.rent %>" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+            </div>
+            <div>
+                <label for="room-occupancy" class="block text-sm font-medium text-gray-700">Occupancy Type</label>
+                <select name="occupancyType" id="room-occupancy" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="single" <%= (room.occupancyType == 'single') ? 'selected' : '' %>>Single</option>
+                    <option value="double" <%= (room.occupancyType == 'double') ? 'selected' : '' %>>Double</option>
+                </select>
+            </div>
+            <button type="submit" class="w-full bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700">Save Changes</button>
+        </form>
+    </div>
+</main>
+
+<%- include('partials/footer') %>

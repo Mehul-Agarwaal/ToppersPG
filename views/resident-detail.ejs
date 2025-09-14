@@ -1,13 +1,16 @@
+
 <%- include('partials/header') %>
 
 <main class="container mx-auto p-4 md:p-6 lg:p-8">
     <div class="max-w-4xl mx-auto">
-        <div class="mb-6">
+        <div class="flex justify-between items-center mb-6">
             <a href="/residents" class="flex items-center text-indigo-600 hover:text-indigo-800 font-medium">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
                 Back to All Residents
+            </a>
+            <a href="/residents/<%= resident._id %>/edit" class="inline-flex items-center bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300 text-sm font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>
+                Edit Details
             </a>
         </div>
         
@@ -18,7 +21,6 @@
                 <div class="w-full md:w-1/3 flex-shrink-0">
                      <img class="h-64 w-full object-cover rounded-lg shadow-md" src="<%= resident.photo ? resident.photo.url : 'https://placehold.co/400x600/E2E8F0/4A5568?text=Photo' %>" alt="<%= resident.name %>">
                 </div>
-
                 <div class="w-full md:w-2/3">
                     <h1 class="text-4xl font-bold text-slate-800"><%= resident.name %></h1>
                     <p class="text-lg text-gray-500 mb-6"><%= resident.occupation %> at <%= resident.workplaceOrCollege %></p>
@@ -60,11 +62,8 @@
                     
                     <% if (resident.idProof && resident.idProof.url) { %>
                         <div class="mt-8">
-                            <a href="<%= resident.idProof.url %>" target="_blank" class="inline-flex items-center bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                  <path fill-rule="evenodd" d="M.458 10C3.732 4.943 9.522 3 10 3s6.268 1.943 9.542 7c-3.274 5.057-9.064 7-9.542 7S3.268 15.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
-                                </svg>
+                            <a href="<%= resident.idProof.url %>" target="_blank" class="inline-flex items-center bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C3.732 4.943 9.522 3 10 3s6.268 1.943 9.542 7c-3.274 5.057-9.064 7-9.542 7S3.268 15.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg>
                                 View Identity Proof
                             </a>
                         </div>
@@ -82,7 +81,7 @@
                             <span class="text-sm text-red-600">(for <%= pendingMonths %> month/s)</span>
                         </p>
                         <form action="/residents/<%= resident._id %>/pay" method="POST" class="mt-4">
-                            <button type="submit" class="w-full md:w-auto bg-green-600 text-white py-2 px-6 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            <button type="submit" class="w-full md:w-auto bg-green-600 text-white py-2 px-6 rounded-md hover:bg-green-700">
                                 Mark as Paid
                             </button>
                         </form>

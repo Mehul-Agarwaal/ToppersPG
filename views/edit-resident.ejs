@@ -1,0 +1,72 @@
+<%- include('partials/header') %>
+
+<main class="container mx-auto p-4 md:p-6 lg:p-8">
+    <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
+        <div class="flex items-center mb-6">
+             <a href="/residents/<%= resident._id %>" class="text-indigo-600 hover:text-indigo-800 mr-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+            </a>
+            <h1 class="text-3xl font-bold text-slate-800">Edit Resident Details</h1>
+        </div>
+        
+        <%- include('partials/messages') %>
+        
+        <form action="/residents/<%= resident._id %>?_method=PUT" method="POST" class="space-y-6">
+            <div class="border-b border-gray-200 pb-6">
+                <h2 class="text-lg font-semibold text-gray-700 mb-4">Personal Details</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                        <input type="text" name="name" id="name" value="<%= resident.name %>" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="contactNumber" class="block text-sm font-medium text-gray-700">Contact Number</label>
+                        <input type="tel" name="contactNumber" id="contactNumber" value="<%= resident.contactNumber %>" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                        <input type="email" name="email" id="email" value="<%= resident.email %>" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="permanentAddress" class="block text-sm font-medium text-gray-700">Permanent Address</label>
+                        <input type="text" name="permanentAddress" id="permanentAddress" value="<%= resident.permanentAddress %>" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                     <div>
+                        <label for="occupation" class="block text-sm font-medium text-gray-700">Occupation</label>
+                        <input type="text" name="occupation" id="occupation" value="<%= resident.occupation %>" placeholder="e.g., Student, Teacher" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                     <div>
+                        <label for="workplaceOrCollege" class="block text-sm font-medium text-gray-700">Workplace / College</label>
+                        <input type="text" name="workplaceOrCollege" id="workplaceOrCollege" list="workplaces" value="<%= resident.workplaceOrCollege %>" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <datalist id="workplaces">
+                            <option value="Manipal University">
+                            <option value="Jaipur National University">
+                            <option value="Fortis Hospital">
+                            <option value="Jawahar Circle IT Park">
+                        </datalist>
+                    </div>
+                </div>
+            </div>
+            
+             <div class="border-b border-gray-200 pb-6">
+                 <h2 class="text-lg font-semibold text-gray-700 mb-4">Room Details (Cannot be changed here)</h2>
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Property</p>
+                        <p class="text-gray-900"><%= resident.pg.name %></p>
+                    </div>
+                     <div>
+                        <p class="text-sm font-medium text-gray-500">Room</p>
+                        <p class="text-gray-900">Room <%= resident.room.roomNumber %></p>
+                    </div>
+                 </div>
+            </div>
+            
+            <div class="flex justify-end">
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<%- include('partials/footer') %>
