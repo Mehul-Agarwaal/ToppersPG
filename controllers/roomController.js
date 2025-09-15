@@ -1,15 +1,18 @@
 const Room = require('../models/Room');
 
 exports.createRoom = async (req, res) => {
+    // Get the PG's ID from the form body
+    const { roomNumber, pg, occupancyType, rent } = req.body;
     try {
-        const { roomNumber, pg, occupancyType, rent } = req.body;
         await Room.create({ roomNumber, pg, occupancyType, rent, admin: req.user._id });
         req.flash('success_msg', 'New room added successfully!');
-        res.redirect('/');
+        // Redirect back to the PG's detail page
+        res.redirect(`/pgs/${pg}`);
     } catch (error) {
         console.error(error);
         req.flash('error', 'Error adding new room.');
-        res.redirect('/');
+        // Redirect back to the PG's detail page on error
+        res.redirect(`/pgs/${pg}`);
     }
 };
 
